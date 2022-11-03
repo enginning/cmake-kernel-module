@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
+
 # Ref:
 # https://gitlab.com/christophacham/cmake-kernel-module
 # https://gitioc.upc.edu/open-source/xenomai-cmake/blob/master/cmake-modules/FindKernelHeaders.cmake
@@ -26,6 +27,14 @@ find_path(
         PATHS /usr/src/linux-headers-${KERNEL_RELEASE}
 )
 
+# Find the headers - if previous not work (on Debian system)
+if("${kerneldir}" STREQUAL "")
+execute_process(COMMAND uname -r OUTPUT_VARIABLE uname_r   OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(KERNELHEADERS_DIR "/lib/modules/${uname_r}/build")
+endif()
+
+
+
 message(STATUS "Kernel release: ${KERNEL_RELEASE}")
 message(STATUS "Kernel headers: ${KERNELHEADERS_DIR}")
 
@@ -46,5 +55,6 @@ add_custom_command(OUTPUT ${DRIVER_FILE}
         DEPENDS hello.c VERBATIM)
 
 add_custom_target(driver ALL DEPENDS ${DRIVER_FILE})
-# Parse c files
-add_library(dummy_target hello.c)
+
+# Parse c files - cannot parse because include directory not working properly on Debian system
+#add_library(dummy_target hello.c)
